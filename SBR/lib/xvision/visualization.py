@@ -7,11 +7,13 @@
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+import cv2
 import numpy as np
 import datasets
 
 def draw_image_by_points(_image, pts, radius, color, crop, resize):
   if isinstance(_image, str):
+    cv_img = cv2.imread(_image)
     _image = datasets.pil_loader(_image)
   assert isinstance(_image, Image.Image), 'image type is not PIL.Image.Image'
   assert isinstance(pts, np.ndarray) and (pts.shape[0] == 2 or pts.shape[0] == 3), 'input points are not correct'
@@ -46,7 +48,7 @@ def draw_image_by_points(_image, pts, radius, color, crop, resize):
     pts[0, visiable_points] = pts[0, visiable_points] * 1.0 / width * resize
     pts[1, visiable_points] = pts[1, visiable_points] * 1.0 / height * resize
 
-  finegrain = True
+  finegrain = False
   if finegrain:
     owidth, oheight = image.size
     image = image.resize((owidth*8,oheight*8), Image.BICUBIC)
@@ -56,13 +58,14 @@ def draw_image_by_points(_image, pts, radius, color, crop, resize):
 
   draw  = ImageDraw.Draw(image)
   for idx in range(num_points):
-    if visiable_points[ idx ]:
-      # draw hollow circle
-      point = (pts[0,idx]-radius, pts[1,idx]-radius, pts[0,idx]+radius, pts[1,idx]+radius)
-      if radius > 0:
-        draw.ellipse(point, fill=color, outline=color)
+    # if visiable_points[ idx ]:
+    #   # draw hollow circle
+    #   point = (pts[0,idx]-radius, pts[1,idx]-radius, pts[0,idx]+radius, pts[1,idx]+radius)
+    #   if radius > 0:
+    #     draw.ellipse(point, fill=color, outline=color)
+    cv2.circle(cv_img, (int(pts[0,idx]), int(pts[1,idx])), 2, (255, 0, 0), 2)
 
   if finegrain:
     image = image.resize((owidth,oheight), Image.BICUBIC)
 
-  return image
+  return cv_img, pts[[0, 1], :].T.ravel()

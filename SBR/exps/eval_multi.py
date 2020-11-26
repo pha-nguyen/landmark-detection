@@ -20,6 +20,7 @@ from xvision  import transforms, draw_image_by_points
 from models   import obtain_model, remove_module_dict
 from utils    import get_model_infos
 from config_utils import load_configure
+import cv2
 
 model_path = "/mnt/be6f1b04-2ec3-4579-a72a-8a5451087c69/Repos/landmark-detection/SBR/sbr_model.pth"
 print('The model is {:}'.format(model_path))
@@ -48,6 +49,8 @@ except:
     weights = remove_module_dict(snapshot['state_dict'])
 net.load_state_dict(weights)
 
+f = open("list.txt", "w")
+test = open("Test.txt", "w")
 
 def evaluate(args):
     assert torch.cuda.is_available(), 'CUDA is not available.'
@@ -91,12 +94,20 @@ def evaluate(args):
 
     if args.save:
         resize = 0
-        image = draw_image_by_points(
+        image, pts = draw_image_by_points(
             args.image, prediction, 2, (255, 0, 0), args.face, resize)
-        image.save(args.save)
+        # image.save(args.save)
+        cv2.imwrite(args.save, image)
         print('save the visualization results into {:}'.format(args.save))
     else:
         print('ignore the visualization procedure')
+
+    if np.random.randint(10) > 0 :
+        string = " ".join([str(i) for i in pts]) + " " + "glass/" + args.image.split("/")[-1] + "\n"
+        f.writelines(string)
+    else:
+        string = " ".join([str(i) for i in pts]) + " " + "glass/" + args.image.split("/")[-1] + "\n"
+        test.writelines(string)
 
 
 if __name__ == '__main__':
@@ -117,8 +128,10 @@ if __name__ == '__main__':
     images_path = "/mnt/be6f1b04-2ec3-4579-a72a-8a5451087c69/glass/"
     files = pickle.load(open("./box.pkl", "rb"))
 
-    for file in files.keys():
+    for file in list(files.keys())[:50]:
         args.image = images_path + file
         args.face = list(map(float, files[file]))
         args.save = "./debug/" + file
         evaluate(args)
+    f.close()
+    test.close()
