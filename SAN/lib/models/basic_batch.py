@@ -18,7 +18,7 @@ def find_tensor_peak_batch(heatmap, radius, downsample, threshold = 0.000001):
   # find the approximate location:
   score, index = torch.max(heatmap.view(num_pts, -1), 1)
   index_w = (index % W).float()
-  index_h = (index / W).float()
+  index_h = (index // W).float()
   
   def normalize(x, L):
     return -1. + 2. * x.data / (L-1)

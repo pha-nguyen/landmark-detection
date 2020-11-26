@@ -36,9 +36,9 @@ def draw_image_by_points(_image, pts, radius, color, crop, resize):
       face_h, face_w = (y2-y1)*0.1, (x2-x1)*0.1
       x1, x2 = int(x1 - face_w), int(x2 + face_w)
       y1, y2 = int(y1 - face_h), int(y2 + face_h)
-    image = image.crop((x1, y1, x2, y2))
-    pts[0, visiable_points] = pts[0, visiable_points] - x1
-    pts[1, visiable_points] = pts[1, visiable_points] - y1
+    # image = image.crop((x1, y1, x2, y2))
+    pts[0, visiable_points] = pts[0, visiable_points]
+    pts[1, visiable_points] = pts[1, visiable_points]
 
   if resize:
     width, height = image.size
