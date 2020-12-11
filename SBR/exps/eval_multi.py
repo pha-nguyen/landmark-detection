@@ -128,7 +128,7 @@ if __name__ == '__main__':
     images_path = "/mnt/be6f1b04-2ec3-4579-a72a-8a5451087c69/glass/"
     files = pickle.load(open("./box.pkl", "rb"))
 
-    for file in list(files.keys())[:50]:
+    for file in list(files.keys()):
         args.image = images_path + file
         args.face = list(map(float, files[file]))
         args.save = "./debug/" + file
